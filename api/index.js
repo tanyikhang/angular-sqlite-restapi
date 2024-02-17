@@ -1,115 +1,98 @@
 const express = require("express");
 const cors = require("cors");
-const { MongoClient } = require('mongodb');
+const sqlite3 = require("sqlite3").verbose();
 const multer = require("multer");
 
 const app = express();
 const PORT = process.env.PORT || 5038;
-const { ObjectId } = require('mongodb');
 
+app.use(express.json());
+app.use(cors());
 
-app.use(express.json()); // Parse JSON bodies
-app.use(cors()); // Enable CORS
+// Specify the path to your SQLite database file
+const dbPath = "d:/Database/sqlite-tools-win-x64-3450100/angular.db";
 
-const uri = "mongodb+srv://yikhang10:yikhang123@cluster0.zeixozg.mongodb.net/?retryWrites=true&w=majority";
-const databaseName = "todoappdb";
+// Connect to SQLite database
+//const db = new sqlite3.Database(":memory:"); // In-memory database for demonstration purposes
+const db = new sqlite3.Database(dbPath);
 
-async function connectToDatabase() {
-    const client = new MongoClient(uri);
-    try {
-        await client.connect();
-        console.log("Connected to MongoDB!");
-        return client.db(databaseName);
-    } catch (error) {
-        console.error("Error connecting to MongoDB:", error);
-        throw error;
-    }
-}
+// Create a 'todoappcollection' table
+db.serialize(() => {
+    db.run("CREATE TABLE IF NOT EXISTS todoappcollection (id INTEGER PRIMARY KEY AUTOINCREMENT, description TEXT)");
+    console.log("Connected to SQLite database successfully!");
 
-async function startServer() {
-    try {
-        const database = await connectToDatabase();
-
-        // Define routes after the database connection is established
-        app.get('/api/todoapp/GetNotes', async (request, response) => {
-            try {
-                const notes = await database.collection("todoappcollection").find({}).toArray();
-                response.json(notes);
-            } catch (error) {
-                console.error("Error fetching notes:", error);
+    // Define routes after the database connection is established
+    app.get('/api/todoapp/GetNotes', (request, response) => {
+        db.all("SELECT * FROM todoappcollection", (err, rows) => {
+            if (err) {
+                console.error("Error fetching notes:", err);
                 response.status(500).json({ error: "Internal Server Error" });
+            } else {
+                response.json(rows);
             }
         });
+    });
 
-        app.post('/api/todoapp/AddNotes', multer().none(), async (request, response) => {
-            try {
-                const newNote = request.body.newNote;
-                const result = await database.collection("todoappcollection").insertOne({ description: newNote });
-                response.json({ message: "Note added successfully", insertedId: result.insertedId });
-            } catch (error) {
-                console.error("Error adding note:", error);
+    app.post('/api/todoapp/AddNotes', multer().none(), (request, response) => {
+        const newNote = request.body.newNote;
+        db.run("INSERT INTO todoappcollection (description) VALUES (?)", [newNote], function (err) {
+            if (err) {
+                console.error("Error adding note:", err);
                 response.status(500).json({ error: "Internal Server Error" });
+            } else {
+                response.json({ message: "Note added successfully", insertedId: this.lastID });
             }
         });
+    });
 
-        app.put('/api/todoapp/UpdateNote/:id', multer().none(), async (request, response) => {
-            try {
-                const noteId = request.params.id;
-                const objectId = new ObjectId(noteId);
-                const newDescription = request.body.description;
-                const result = await database.collection("todoappcollection").updateOne({ _id: objectId }, { $set: { description: newDescription } });
-                console.log(result);
-                if (result.modifiedCount === 1) {
+    app.put('/api/todoapp/UpdateNote/:id', multer().none(), (request, response) => {
+        const noteId = request.params.id;
+        const newDescription = request.body.description;
+        db.run("UPDATE todoappcollection SET description = ? WHERE id = ?", [newDescription, noteId], function (err) {
+            if (err) {
+                console.error("Error updating note:", err);
+                response.status(500).json({ error: "Internal Server Error" });
+            } else {
+                if (this.changes > 0) {
                     response.json({ message: "Note updated successfully" });
                 } else {
                     response.status(404).json({ error: "Note not found" });
                 }
-            } catch (error) {
-                console.error("Error updating note:", error);
-                response.status(500).json({ error: "Internal Server Error" });
             }
         });
+    });
 
-        app.delete('/api/todoapp/DeleteNote/:id', async (request, response) => {
-            try {
-                const noteId = request.params.id;
-                console.log(noteId);
-                if (!ObjectId.isValid(noteId)) {
-                    return response.status(400).json({ error: "Invalid note ID" });
-                }
-                const objectId = new ObjectId(noteId);
-                const result = await database.collection("todoappcollection").deleteOne({ _id: objectId });
-                console.log(noteId);
-                console.log(result);
-                if (result.deletedCount === 1) {
+    app.delete('/api/todoapp/DeleteNote/:id', (request, response) => {
+        const noteId = request.params.id;
+        db.run("DELETE FROM todoappcollection WHERE id = ?", [noteId], function (err) {
+            if (err) {
+                console.error("Error deleting note:", err);
+                response.status(500).json({ error: "Internal Server Error" });
+            } else {
+                if (this.changes > 0) {
                     response.json({ message: "Note deleted successfully" });
                 } else {
                     response.status(404).json({ error: "Note not found" });
                 }
-            } catch (error) {
-                console.error("Error deleting note:", error);
-                response.status(500).json({ error: "Internal Server Error" });
             }
         });
+    });
 
-        app.get('/api/todoapp/SearchNotes', async (request, response) => {
-            try {
-                const searchTerm = request.query.term;
-                const notes = await database.collection("todoappcollection").find({ description: { $regex: searchTerm, $options: 'i' } }).toArray();
-                response.json(notes);
-            } catch (error) {
-                console.error("Error searching notes:", error);
+    app.get('/api/todoapp/SearchNotes', (request, response) => {
+        const searchTerm = request.query.term;
+        const query = "SELECT * FROM todoappcollection WHERE description LIKE ?";
+        const searchTermPattern = `%${searchTerm}%`;
+        db.all(query, [searchTermPattern], (err, rows) => {
+            if (err) {
+                console.error("Error searching notes:", err);
                 response.status(500).json({ error: "Internal Server Error" });
+            } else {
+                response.json(rows);
             }
         });
+    });
 
-        app.listen(PORT, () => {
-            console.log(`Server is listening on port ${PORT}`);
-        });
-    } catch (error) {
-        console.error("Error starting server:", error);
-        process.exit(1);
-    }
-}
-
-startServer();
+    app.listen(PORT, () => {
+        console.log(`Server is listening on port ${PORT}`);
+    });
+});
