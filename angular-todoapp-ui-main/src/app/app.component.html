@@ -1,0 +1,16 @@
+<h2>Todo App</h2>
+
+<input type="text" [(ngModel)]="searchTerm">
+<button (click)="searchNotes()">Search</button>
+
+<input id="newNotes" name="newNotes" [(ngModel)]="newNote">
+<button (click)="addNotes()">Add Notes</button>
+
+<h3 *ngFor="let note of notes; let i = index">
+  <div>
+    <b>{{ i + 1 }}. {{ note.description }}</b>
+    <input type="text" [(ngModel)]="note.updatedDescription">
+    <button (click)="updateNotes(note._id, note.updatedDescription)">Update Note</button>
+    <button (click)="deleteNotes(note._id)">Delete Note</button>
+  </div>
+</h3>
