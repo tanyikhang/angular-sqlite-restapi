@@ -10,7 +10,7 @@
   <div>
     <b>{{ i + 1 }}. {{ note.description }}</b>
     <input type="text" [(ngModel)]="note.updatedDescription">
-    <button (click)="updateNotes(note._id, note.updatedDescription)">Update Note</button>
-    <button (click)="deleteNotes(note._id)">Delete Note</button>
+    <button (click)="updateNotes(note.id, note.updatedDescription)">Update Note</button>
+    <button (click)="deleteNotes(note.id)">Delete Note</button>
   </div>
 </h3>

@@ -13,8 +13,8 @@ app.use(cors());
 const dbPath = "d:/Database/sqlite-tools-win-x64-3450100/angular.db";
 
 // Connect to SQLite database
-//const db = new sqlite3.Database(":memory:"); // In-memory database for demonstration purposes
-const db = new sqlite3.Database(dbPath);
+const db = new sqlite3.Database(":memory:"); // In-memory database for demonstration purposes
+//const db = new sqlite3.Database(dbPath);
 
 // Create a 'todoappcollection' table
 db.serialize(() => {
