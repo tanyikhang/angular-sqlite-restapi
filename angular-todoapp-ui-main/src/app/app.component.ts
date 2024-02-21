@@ -1,21 +1,22 @@
 import { Component } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
+
 export class AppComponent {
   title = 'todoapp';
   readonly APIUrl = "http://localhost:5038/api/todoapp/";
   newNote: string = ''; // Binding for the input field
   updatedDescription: string = ''; // Define updatedDescription property
   searchTerm: string = ''; // Define searchTerm property
+  notes: any = []; // Store notes retrieved from the server
 
-  notes: any = [];
-
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private router: Router) { }
 
   ngOnInit() {
     this.refreshNotes();
@@ -37,7 +38,13 @@ export class AppComponent {
     });
   }
 
-  deleteNotes(id: any) {
+  searchNotes() {
+    this.http.get(this.APIUrl + 'SearchNotes', { params: { term: this.searchTerm } }).subscribe((data: any) => {
+      this.notes = data;
+    });
+  }
+
+  /*deleteNotes(id: any) {
     console.log(id);
     this.http.delete(this.APIUrl + 'DeleteNote/' + id).subscribe((data: any) => {
       alert(data);
@@ -53,11 +60,5 @@ export class AppComponent {
       alert(data.message);
       this.refreshNotes();
     });
-}
-
-searchNotes() {
-    this.http.get(this.APIUrl + 'SearchNotes', { params: { term: this.searchTerm } }).subscribe((data: any) => {
-        this.notes = data;
-    });
-}
+  }*/
 }

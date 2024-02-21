@@ -1,0 +1,30 @@
+.note-card {
+    margin-bottom: 20px;
+    border: 1px solid #dee2e6;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s ease;
+}
+
+.note-card:hover {
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.card-title {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.input-group {
+    margin-top: 10px;
+}
+
+.btn-action {
+    border-radius: 5px;
+    margin-right: 10px;
+}
+
+.btn-action i {
+    margin-right: 5px;
+}

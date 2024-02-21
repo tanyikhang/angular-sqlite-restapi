@@ -1,16 +1,51 @@
-<h2>Todo App</h2>
+<!DOCTYPE html>
+<html lang="en">
 
-<input type="text" [(ngModel)]="searchTerm">
-<button (click)="searchNotes()">Search</button>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo App</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="app.component.css" rel="stylesheet">
+</head>
 
-<input id="newNotes" name="newNotes" [(ngModel)]="newNote">
-<button (click)="addNotes()">Add Notes</button>
+<body>
 
-<h3 *ngFor="let note of notes; let i = index">
-  <div>
-    <b>{{ i + 1 }}. {{ note.description }}</b>
-    <input type="text" [(ngModel)]="note.updatedDescription">
-    <button (click)="updateNotes(note.id, note.updatedDescription)">Update Note</button>
-    <button (click)="deleteNotes(note.id)">Delete Note</button>
-  </div>
-</h3>
+     <!-- Angular router outlet for loading different components based on the current route -->
+    <router-outlet></router-outlet>
+
+    <div class="container">
+        <h2 class="text-center mb-4">Todo App</h2>
+
+        <div class="input-group mb-3">
+            <input type="text" class="form-control" placeholder="Search Term" [(ngModel)]="searchTerm">
+            <div class="input-group-append">
+                <button class="btn btn-primary" type="button" (click)="searchNotes()">Search</button>
+            </div>
+        </div>
+
+        <div class="input-group mb-3">
+            <input type="text" class="form-control" id="newNotes" name="newNotes" placeholder="Enter New Note"
+                [(ngModel)]="newNote">
+            <div class="input-group-append">
+                <button class="btn btn-success" type="button" (click)="addNotes()">Add Note</button>
+            </div>
+        </div>
+
+         <!-- Display notes using ngFor directive and routerLink to navigate to note details -->
+        <div *ngFor="let note of notes" class="card" [routerLink]="['/note', note.id]">
+            <div class="card-body">
+                <h3 class="card-title">{{ note.description }}</h3>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo App</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="note-details.component.css">
+</head>
+<body>
+
+    <!-- Your Angular Component Code -->
+    <div *ngFor="let note of notes" class="card note-card">
+        <div class="card-body">
+            <h3 class="card-title">{{ note.description }}</h3>
+            <div class="input-group">
+                <input type="text" class="form-control" placeholder="Update Note" [(ngModel)]="note.updatedDescription">
+                <div class="input-group-append">
+                    <button class="btn btn-warning btn-action" type="button" (click)="updateNotes(note.id, note.updatedDescription)">
+                        <i class="fas fa-pencil-alt"></i> Update
+                    </button>
+                    <button class="btn btn-danger btn-action" type="button" (click)="deleteNotes(note.id)">
+                        <i class="fas fa-trash-alt"></i> Delete
+                    </button>
+                    <button class="btn btn-secondary btn-action" type="button" (click)="closeNoteDetails()">
+                        <i class="fas fa-times"></i> Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
