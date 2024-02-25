@@ -1,6 +1,6 @@
 1) Download Visual Studio Code, and Node.js
 2) Open new window in Visual Studio code
-3) Clone Git Repository:
+3) Clone Git Repository: https://github.com/tanyikhang/angular-sqlite-restapi
 4) Direct to the file and start the server in a terminal, ..\todoapp-angular-mongodb-api\api> 
   i) npm install sqlite3
   ii) npm install sequelize sqlite3
