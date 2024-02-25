@@ -8,8 +8,9 @@
 5) open terminal, direct to the file location (exp: ..\todoapp-angular-mongodb-api\angular-todoapp-ui-main> npm install) and run 
   i) npm install 
   ii) npm install @ng-bootstrap/ng-bootstrap
-  iii) ng serve -o
-6) After running, it should be no data yet in the database, you may click  "Add note" to add a note and proceed to other function to test.
+  iii) npm install -g @angular/cli
+  iv) ng serve -o
+7) After running, it should be no data yet in the database, you may click  "Add note" to add a note and proceed to other function to test.
 
 Note:
 
